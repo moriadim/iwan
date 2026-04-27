@@ -209,11 +209,9 @@ export default function UnitPage() {
                     <div className="space-y-4">
                        <Label className="text-lg font-medium pr-2">تاريخ الزيارة</Label>
                        <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-right h-16 rounded-2xl bg-zinc-900/80 border-white/5 px-6 text-lg hover:border-primary/50 transition-all">
-                              <CalendarIcon className="ml-4 h-6 w-6 text-primary" />
-                              {date ? format(date, "PPP", { locale: ar }) : <span className="opacity-50">اختر موعداً مناسباً</span>}
-                            </Button>
+                        <PopoverTrigger className="w-full flex items-center justify-start text-right h-16 rounded-2xl bg-zinc-900/80 border border-white/5 px-6 text-lg hover:border-primary/50 transition-all outline-none">
+                            <CalendarIcon className="ml-4 h-6 w-6 text-primary" />
+                            {date ? format(date, "PPP", { locale: ar }) : <span className="opacity-50">اختر موعداً مناسباً</span>}
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0 bg-zinc-950 border border-white/10" align="start">
                           <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="rounded-2xl" />
