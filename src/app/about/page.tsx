@@ -165,18 +165,28 @@ export default function AboutPage() {
                 <h2 className="text-5xl md:text-6xl font-bold text-black mb-8 leading-tight">
                   {isAr ? "جاهز لبدء رحلتك مع إيوان؟" : "Ready to start your journey with Iwan?"}
                 </h2>
-                <div className="flex flex-col md:flex-row gap-6 justify-center">
-                   <Link href="/catalog">
-                      <Button className="bg-black text-white hover:bg-black/80 px-12 py-8 rounded-2xl text-xl font-bold shadow-2xl">
-                         {isAr ? "استكشف العقارات" : "Explore Properties"}
-                      </Button>
-                   </Link>
-                   <Link href="/contact">
-                      <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white px-12 py-8 rounded-2xl text-xl font-bold transition-all">
-                         {isAr ? "تحدث معنا" : "Talk to us"}
-                      </Button>
-                   </Link>
-                </div>
+                   <div className="flex flex-col md:flex-row gap-8 justify-center">
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                         <Link href="/catalog">
+                            <Button className="bg-black text-white hover:bg-zinc-900 px-16 py-8 rounded-2xl text-xl font-bold shadow-2xl transition-all duration-300 relative group overflow-hidden">
+                               <span className="relative z-10 transition-transform duration-300 group-hover:-translate-y-1 block">
+                                  {isAr ? "استكشف العقارات" : "Explore Properties"}
+                               </span>
+                               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Button>
+                         </Link>
+                      </motion.div>
+                      
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                         <Link href="/contact">
+                            <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white px-16 py-8 rounded-2xl text-xl font-bold transition-all duration-300 relative group overflow-hidden">
+                               <span className="relative z-10 transition-transform duration-300 group-hover:-translate-y-1 block">
+                                  {isAr ? "تحدث معنا" : "Talk to us"}
+                               </span>
+                            </Button>
+                         </Link>
+                      </motion.div>
+                   </div>
              </div>
           </div>
         </section>
