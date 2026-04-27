@@ -4,7 +4,7 @@
 **Date:** April 27, 2026  
 **Architect:** MERZOUGUI ABDELLAH EL GHAZALI  
 **Collaborators:** Hadjer Khawla MEGHOUFEL, BENHAOUA Boualem  
-**Domain:** Cloud Infrastructure & Full-Stack Information Systems (SI 2CP)
+**Domain:** Full-Stack Information Systems (SI 2CP)
 
 ---
 
@@ -53,4 +53,4 @@ Iwan is more than a final project; it is a proof of concept for a frictionless r
 **Iwan is ready to build, ready to ship, and ready to scale.**
 
 ---
-*Submitted for the Final Evaluation of the ESTIN Cloud Computing & SI Module.*
+*Submitted for the Final Evaluation of the ESTIN SI Module.*
