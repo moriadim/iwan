@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -22,6 +23,8 @@ interface Property {
 
 export function PropertyCard({ property, index }: { property: Property; index: number }) {
   const { language } = useLanguage();
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage = "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop";
 
   return (
     <motion.div
@@ -33,10 +36,12 @@ export function PropertyCard({ property, index }: { property: Property; index: n
       <Card className="overflow-hidden border-none shadow-2xl group bg-card/40 backdrop-blur-sm transition-all hover:shadow-primary/10">
         <div className="relative h-96">
           <Image
-            src={property.image_url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"}
+            src={imageError ? fallbackImage : (property.image_url || fallbackImage)}
             alt={property.title_en}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
+            onError={() => setImageError(true)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <Badge className="absolute top-6 right-6 bg-primary/90 text-primary-foreground text-sm py-1 px-4 rounded-full">
