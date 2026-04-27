@@ -7,7 +7,7 @@
 - **Student 1**: MERZOUGUI ABDELLAH EL GHAZALI
 - **Student 2**: Hadjer Khawla MEGHOUFEL
 - **Student 3**: BENHAOUA Boualem
-- **Group**: [Enter your Group number here]
+- **Group**: G1
 
 ---
 
@@ -31,14 +31,11 @@ Use the following account to test the internal tenant dashboard:
 
 ### 📺 Demonstration Video
 - **Link**: [Insert your YouTube/Loom/Drive link here]
-*(Video showcasing the Bilingual UI, Property Booking, File Upload, and Dashboard functions)*
 
 ---
 
 ### 📄 Architect's Report (PDF)
-- **Link**: [Insert your Google Drive link to the PDF here]
-*(Ensure access is set to "Anyone with the link")*
-
+- **Link**: [[Google Drive link](https://drive.google.com/file/d/1-uvwOznTGtorhwrU0IorhKx-7KXj4NKd/view?usp=sharing)]
 ---
 
 ### 🛠️ Technical Stack & Architecture
