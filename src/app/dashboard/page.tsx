@@ -228,10 +228,10 @@ export default function DashboardPage() {
                               </TableCell>
                               <TableCell className="pl-8">
                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" className="h-12 w-12 p-0 rounded-full"><MoreHorizontal className="h-6 w-6" /></Button>
+                                    <DropdownMenuTrigger className="h-12 w-12 flex items-center justify-center hover:bg-primary/20 hover:text-primary rounded-full transition-all outline-none">
+                                        <MoreHorizontal className="h-6 w-6" />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="bg-zinc-950 border-white/10 text-zinc-300 min-w-40 rounded-2xl p-2 backdrop-blur-2xl transition-all">
+                                    <DropdownMenuContent align="end" className="bg-zinc-950 border-white/10 text-zinc-300 min-w-40 rounded-2xl shadow-2xl p-2 backdrop-blur-2xl transition-all">
                                        <DropdownMenuItem onClick={() => setActiveTab("visits")} className="justify-end cursor-pointer rounded-xl hover:bg-white/5 py-3">التفاصيل</DropdownMenuItem>
                                        <DropdownMenuSeparator className="bg-white/5" />
                                        <DropdownMenuItem onClick={handleActionClick} className="justify-end cursor-pointer rounded-xl text-destructive hover:bg-destructive/10 py-3">إلغاء</DropdownMenuItem>
