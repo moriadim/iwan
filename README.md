@@ -26,7 +26,7 @@ Iwan manages data through two distinct lenses to ensure high availability and se
 
 ---
 
-## 🗺️ Theme Mapping (Dar-Connect)
+## 🗺️ Theme Mapping Iwan (إيوان)
 
 | Theme Component | Table/Entity | Arabic Translation | Description |
 | :--- | :--- | :--- | :--- |
@@ -69,4 +69,4 @@ Iwan manages data through two distinct lenses to ensure high availability and se
 5. **Run Locally**: `npm run dev`
 
 ---
-*Created for the Final Project Submission - Cloud Computing 2026*
+*Created for the Final Project Submission*
