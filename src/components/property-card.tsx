@@ -10,13 +10,13 @@ import { MapPin, Star } from "lucide-react";
 import { useLanguage } from "./language-provider";
 
 interface Property {
-  id: number;
+  id: string | number;
   title_ar: string;
   title_en: string;
-  price: string;
+  price_aed: number;
   location_ar: string;
   location_en: string;
-  image: string;
+  image_url: string;
   category: string;
 }
 
@@ -33,7 +33,7 @@ export function PropertyCard({ property, index }: { property: Property; index: n
       <Card className="overflow-hidden border-none shadow-2xl group bg-card/40 backdrop-blur-sm transition-all hover:shadow-primary/10">
         <div className="relative h-96">
           <Image
-            src={property.image}
+            src={property.image_url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"}
             alt={property.title_en}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -44,7 +44,7 @@ export function PropertyCard({ property, index }: { property: Property; index: n
           </Badge>
           <div className="absolute bottom-6 left-6 right-6 text-white text-right">
             <div className="text-3xl font-bold mb-1">
-               {property.price} <span className="text-sm font-normal opacity-80">AED</span>
+               {property.price_aed?.toLocaleString()} <span className="text-sm font-normal opacity-80">AED</span>
             </div>
           </div>
         </div>

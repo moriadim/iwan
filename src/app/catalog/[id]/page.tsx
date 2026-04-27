@@ -22,21 +22,31 @@ import { Navbar } from "@/components/navbar";
 
 export default function UnitPage() {
   const { id } = useParams();
+  const [unit, setUnit] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState<Date>();
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const supabase = createClient();
 
-  // Mock property data
-  const unit = {
-    id: id,
-    title_ar: "فيلا النخلة جميرا - أفق البحر",
-    price: "4,500,000",
-    location_ar: "نخلة جميرا، دبي، الإمارات العربية المتحدة",
-    description_ar: "تجربة سكنية لا مثيل لها في قلب نخلة جميرا. تتميز هذه الفيلا بتصميم عصري يدمج بين الفخامة والراحة، مع إطلالات بانورامية خلابة على أفق دبي والخليج العربي.",
-    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"]
-  };
+  useEffect(() => {
+    async function fetchUnit() {
+      const { data, error } = await supabase
+        .from("units")
+        .select("*")
+        .eq("id", id)
+        .single();
+      
+      if (error) {
+        toast.error("فشل في تحميل بيانات العقار");
+      } else {
+        setUnit(data);
+      }
+      setLoading(false);
+    }
+    if (id) fetchUnit();
+  }, [id, supabase]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -107,6 +117,25 @@ export default function UnitPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary w-12 h-12" />
+      </div>
+    );
+  }
+
+  if (!unit) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6" dir="rtl">
+        <h1 className="text-4xl font-bold mb-4">العقار غير موجود</h1>
+        <Link href="/catalog">
+          <Button variant="outline">العودة إلى الكتالوج</Button>
+        </Link>
+      </div>
+    );
+  }
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center" dir="rtl">
@@ -128,7 +157,13 @@ export default function UnitPage() {
       
       {/* Hero Image */}
       <div className="relative h-[65vh] overflow-hidden pt-20">
-        <Image src={unit.images[0]} alt={unit.title_ar} fill className="object-cover" priority />
+        <Image 
+          src={unit.image_url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"} 
+          alt={unit.title_ar} 
+          fill 
+          className="object-cover" 
+          priority 
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         <div className="absolute top-28 left-8">
            <Link href="/">
@@ -143,14 +178,18 @@ export default function UnitPage() {
         {/* Info Column */}
         <div className="lg:col-span-2 space-y-12">
            <Card className="bg-card/40 backdrop-blur-3xl p-10 rounded-[40px] border border-white/5 shadow-2xl">
-              <Badge className="bg-primary/20 text-primary mb-4 px-4 py-1 rounded-full border-primary/20">وحدة سكنية فاخرة</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{unit.title_ar}</h1>
+              <Badge className="bg-primary/20 text-primary mb-4 px-4 py-1 rounded-full border-primary/20">{unit.category}</Badge>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                {language === "ar" ? unit.title_ar : unit.title_en}
+              </h1>
               <div className="flex items-center text-zinc-400 gap-2 text-lg mb-8">
                  <MapPin size={20} className="text-primary" />
-                 <span>{unit.location_ar}</span>
+                 <span>{language === "ar" ? unit.location_ar : unit.location_en}</span>
               </div>
-              <div className="text-4xl font-bold text-primary mb-8">{unit.price} AED</div>
-              <p className="text-zinc-400 text-xl leading-relaxed font-light">{unit.description_ar}</p>
+              <div className="text-4xl font-bold text-primary mb-8">{unit.price_aed?.toLocaleString()} AED</div>
+              <p className="text-zinc-400 text-xl leading-relaxed font-light">
+                {language === "ar" ? unit.description_ar : unit.description_en}
+              </p>
            </Card>
         </div>
 

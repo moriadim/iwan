@@ -11,43 +11,32 @@ import { PropertyCard } from "@/components/property-card";
 import { LanguageToggle } from "@/components/language-toggle";
 import { useLanguage } from "@/components/language-provider";
 
-const FEATURED_UNITS = [
-  {
-    id: 1,
-    title_ar: "فيلا النخلة جميرا",
-    title_en: "Palm Jumeirah Villa",
-    price: "4,500,000",
-    location_ar: "نخلة جميرا، دبي",
-    location_en: "Palm Jumeirah, Dubai",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop",
-    category: "فائق الفخامة",
-  },
-  {
-    id: 2,
-    title_ar: "شقة برج خليفة",
-    title_en: "Burj Khalifa Apartment",
-    price: "2,800,000",
-    location_ar: "وسط المدينة، دبي",
-    location_en: "Downtown Dubai, Dubai",
-    image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2196&auto=format&fit=crop",
-    category: "إطلالة بانورامية",
-  },
-  {
-    id: 3,
-    title_ar: "قصر المربع",
-    title_en: "Al Murabba Palace",
-    price: "5,200,000",
-    location_ar: "الرياض، السعودية",
-    location_en: "Riyadh, Saudi Arabia",
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop",
-    category: "تراث ملكي",
-  },
-];
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 import { Navbar } from "@/components/navbar";
 
 export default function Home() {
   const { language } = useLanguage();
+  const [featuredUnits, setFeaturedUnits] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function getFeatured() {
+      const { data, error } = await supabase
+        .from("units")
+        .select("*")
+        .limit(3)
+        .order("created_at", { ascending: false });
+      
+      if (!error && data) {
+        setFeaturedUnits(data);
+      }
+      setIsLoading(false);
+    }
+    getFeatured();
+  }, [supabase]);
 
   if (!language) return null; // Safety check
 
@@ -151,9 +140,19 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {FEATURED_UNITS.map((unit, index) => (
-            <PropertyCard key={unit.id} property={unit} index={index} />
-          ))}
+          {isLoading ? (
+            [1, 2, 3].map((i) => (
+              <div key={i} className="h-[400px] bg-white/5 rounded-[40px] animate-pulse" />
+            ))
+          ) : featuredUnits.length > 0 ? (
+            featuredUnits.map((unit, index) => (
+              <PropertyCard key={unit.id} property={unit} index={index} />
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-10 text-zinc-500">
+              {language === "ar" ? "لا توجد وحدات سكنية متاحة" : "No units available"}
+            </div>
+          )}
         </div>
       </section>
 
