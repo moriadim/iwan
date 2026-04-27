@@ -158,19 +158,20 @@ export default function UnitPage() {
       <Navbar />
       
       {/* Hero Image */}
-      <div className="relative h-[65vh] overflow-hidden pt-20">
+      <div className="relative h-[65vh] md:h-[75vh] overflow-hidden">
         <Image 
           src={unit.image_url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"} 
           alt={unit.title_ar} 
           fill 
+          sizes="100vw"
           className="object-cover" 
           priority 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-        <div className="absolute top-28 left-8">
-           <Link href="/">
-             <Button variant="outline" className="bg-black/20 backdrop-blur-md border-white/10 text-white rounded-full p-3 h-12 w-12">
-                <ChevronRight size={24} />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90" />
+        <div className="absolute top-28 right-8">
+           <Link href="/catalog">
+             <Button variant="outline" className="bg-black/40 backdrop-blur-xl border-white/10 text-white rounded-full p-0 h-14 w-14 flex items-center justify-center hover:bg-primary hover:text-black transition-all">
+                <ChevronRight size={28} />
              </Button>
            </Link>
         </div>
@@ -179,17 +180,18 @@ export default function UnitPage() {
       <div className="container mx-auto px-6 -mt-32 relative z-10 grid lg:grid-cols-3 gap-12">
         {/* Info Column */}
         <div className="lg:col-span-2 space-y-12">
-           <Card className="bg-card/40 backdrop-blur-3xl p-10 rounded-[40px] border border-white/5 shadow-2xl">
-              <Badge className="bg-primary/20 text-primary mb-4 px-4 py-1 rounded-full border-primary/20">{unit.category}</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+           <Card className="bg-zinc-900/40 backdrop-blur-3xl p-10 md:p-16 rounded-[50px] border border-white/5 shadow-2xl">
+              <Badge className="bg-primary/20 text-primary mb-6 px-6 py-2 rounded-full border border-primary/20 text-lg">{unit.category}</Badge>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
                 {language === "ar" ? unit.title_ar : unit.title_en}
               </h1>
-              <div className="flex items-center text-zinc-400 gap-2 text-lg mb-8">
-                 <MapPin size={20} className="text-primary" />
+              <div className="flex items-center text-zinc-400 gap-3 text-xl mb-10">
+                 <MapPin size={24} className="text-primary" />
                  <span>{language === "ar" ? unit.location_ar : unit.location_en}</span>
               </div>
-              <div className="text-4xl font-bold text-primary mb-8">{unit.price_aed?.toLocaleString()} AED</div>
-              <p className="text-zinc-400 text-xl leading-relaxed font-light">
+              <div className="text-5xl font-bold text-primary mb-12">{unit.price_aed?.toLocaleString()} AED</div>
+              <div className="h-px w-full bg-white/5 mb-12" />
+              <p className="text-zinc-400 text-2xl leading-relaxed font-light">
                 {language === "ar" ? unit.description_ar : unit.description_en}
               </p>
            </Card>
@@ -197,26 +199,24 @@ export default function UnitPage() {
 
         {/* Form Column */}
         <div className="lg:col-span-1">
-           <Card className="sticky top-24 bg-zinc-950/80 backdrop-blur-2xl border-primary/20 rounded-[40px] shadow-2xl overflow-hidden">
-              <CardHeader className="p-8 border-b border-primary/10">
-                 <CardTitle className="text-2xl font-bold text-primary">جدولة زيارة</CardTitle>
-                 <CardDescription className="text-zinc-400">يرجى ملء البيانات لطلب معاينة العقار</CardDescription>
+           <Card className="sticky top-24 bg-zinc-950/90 backdrop-blur-2xl border border-primary/20 rounded-[50px] shadow-2xl overflow-hidden">
+              <CardHeader className="p-10 border-b border-white/5">
+                 <CardTitle className="text-3xl font-bold text-primary mb-2">جدولة زيارة</CardTitle>
+                 <CardDescription className="text-zinc-500 text-lg italic">نحن بانتظار تشريفكم لمعاينة العقار</CardDescription>
               </CardHeader>
-              <CardContent className="p-8 space-y-8">
-                 <form onSubmit={handleBooking} className="space-y-8">
-                    <div className="space-y-3">
-                       <Label className="text-md">تاريخ الزيارة</Label>
+              <CardContent className="p-10 space-y-8">
+                 <form onSubmit={handleBooking} className="space-y-10">
+                    <div className="space-y-4">
+                       <Label className="text-lg font-medium pr-2">تاريخ الزيارة</Label>
                        <Popover>
-                        <PopoverTrigger 
-                          render={
-                            <Button variant="outline" className="w-full justify-start text-right h-14 rounded-2xl bg-zinc-900 border-white/5">
-                              <CalendarIcon className="ml-3 h-5 w-5 text-primary" />
-                              {date ? format(date, "PPP", { locale: ar }) : <span>اختر موعداً</span>}
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-right h-16 rounded-2xl bg-zinc-900/80 border-white/5 px-6 text-lg hover:border-primary/50 transition-all">
+                              <CalendarIcon className="ml-4 h-6 w-6 text-primary" />
+                              {date ? format(date, "PPP", { locale: ar }) : <span className="opacity-50">اختر موعداً مناسباً</span>}
                             </Button>
-                          } 
-                        />
-                        <PopoverContent className="w-auto p-0 bg-zinc-950 border-white/10" align="start">
-                          <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="rounded-2xl border border-white/5" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-zinc-950 border border-white/10" align="start">
+                          <Calendar mode="single" selected={date} onSelect={setDate} initialFocus className="rounded-2xl" />
                         </PopoverContent>
                       </Popover>
                     </div>
