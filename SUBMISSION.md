@@ -1,34 +1,45 @@
-# Projt Final Submission: IWAN (إيوان)
+# Project Submission: Iwan (إيوان)
 ## Course: Cloud Architecture & Full-stack Development
 
 ### 👥 Team Members
-1. [Student Name 1]
-2. [Student Name 2]
-3. [Student Name 3]
+1. **MERZOUGUI ABDELLAH EL GHAZALI**
+2. **Hadjer Khawla MEGHOUFEL**
+3. **BENHAOUA Boualem**
 
 ---
 
-### 🌐 Live Deployment
-- **Production URL**: [https://iwan-real-estate.vercel.app]
-- **GitHub Repository**: [https://github.com/username/iwan-project]
+### 🌐 Project Links
+- **Production URL**: [https://iwan-rho.vercel.app/](https://iwan-rho.vercel.app/)
+- **GitHub Repository**: [https://github.com/moriadim/iwan.git](https://github.com/moriadim/iwan.git)
 
 ---
 
-### 🔑 Test Credentials
-For evaluation, please use the following credentials to access the Personal Dashboard:
-- **Email**: `test@example.com`
-- **Password**: `TestPassword123`
+### 📝 Project Overview
+**Iwan** is a high-fidelity Real Estate Extranet designed for the premium UAE and Saudi markets. It provides a seamless, secure, and luxury-grade experience for tenants to discover properties and manage their viewing appointments.
+
+### 🚀 Key Features Implemented
+- **Luxury Property Catalog**: Real-time filtering by category (Villa, Apartment, Penthouse) with bilingual support.
+- **Secure Authentication**: Fully integrated Supabase Auth with custom user profile synchronization.
+- **Smart Booking System**: Tenants can schedule visits and securely upload identity documents (Mission 1 Compliance).
+- **Executive Dashboard**: A private user portal to manage visits, view secure signed-url documents, and update profiles.
+- **Lead Capture**: Integrated contact system for high-value client inquiries.
+- **Premium UI/UX**: Cinematic animations (Framer Motion), glassmorphic design, and a custom luxury design system.
+- **Bilingual Core**: Native Arabic RTL support and English LTR support across every page.
+
+### 🏗️ Cloud Architecture Highlights
+- **Serverless Architecture**: Built on Next.js 15 and deployed on Vercel's global edge network for sub-millisecond latency.
+- **Managed Backend (BaaS)**: Leverages Supabase for real-time database management, secure authentication, and object storage.
+- **Security-First Design**: Implements Row Level Security (RLS) policies and Signed URLs for sensitive document protection.
+- **Scalability**: Designed for zero-downtime scaling using cloud-native managed services.
+
+### 🛠️ Technology Stack
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS 4
+- **Animations**: Framer Motion
+- **Backend/DB**: Supabase (PostgreSQL)
+- **Storage**: Supabase Storage (Private & Public buckets)
+- **Icons**: Lucide React
+- **Hosting**: Vercel
 
 ---
-
-### 🏗️ Architectural Highlights Summary
-Iwan is a premium Real Estate Extranet built for the Arab world. By leveraging an **OPEX** financial model via Vercel and Supabase, we escaped the traditional **CAPEX** burdens of physical server ownership. 
-
-Key technical achievements:
-- **Scalability**: Edge-optimized delivery with sub-second response times.
-- **Data Integrity**: Clean separation between **Structured Data** (Postgres) and **Unstructured Data** (ID Scans).
-- **Premium UX**: Full **RTL/LTR Arabic support** with smooth Framer Motion orchestration.
-- **Security**: Bulletproof **RLS** policies ensuring 100% tenant data isolation.
-
----
-*Submitted on: April 20, 2026*
+*Submitted as part of the final project requirements for the ESTIN Cloud Computing curriculum.*
