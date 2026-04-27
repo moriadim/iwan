@@ -46,3 +46,20 @@ export async function uploadIdDocument(formData: FormData) {
 
   return { success: true, path: data.path };
 }
+
+/**
+ * Generates a temporary signed URL for viewing sensitive documents
+ */
+export async function getSignedDocumentUrl(path: string) {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase.storage
+    .from("id-documents")
+    .createSignedUrl(path, 3600); // Link valid for 1 hour
+
+  if (error) {
+    return { error: `Failed to sign URL: ${error.message}` };
+  }
+
+  return { url: data.signedUrl };
+}

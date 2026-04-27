@@ -17,6 +17,7 @@ import { Logo } from "@/components/logo";
 import { DashboardEmptyState } from "@/components/dashboard-empty-state";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { getSignedDocumentUrl } from "@/app/actions/upload";
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -124,9 +125,13 @@ export default function DashboardPage() {
     setIsUpdating(false);
   };
 
-  const handleViewDocument = (path: string) => {
-    const { data } = supabase.storage.from("id-documents").getPublicUrl(path);
-    window.open(data.publicUrl, "_blank");
+  const handleViewDocument = async (path: string) => {
+    const result = await getSignedDocumentUrl(path);
+    if (result.url) {
+      window.open(result.url, "_blank");
+    } else {
+      toast.error("فشل في عرض المستند");
+    }
   };
 
   const handleActionClick = () => {
