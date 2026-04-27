@@ -1,24 +1,17 @@
 import type { Metadata } from "next";
-import { Outfit, Noto_Sans_Arabic } from "next/font/google";
+import { Outfit, Cairo } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "@/components/language-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
-
-const notoAr = Noto_Sans_Arabic({
-  subsets: ["arabic"],
-  variable: "--font-noto-ar",
-});
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const cairo = Cairo({ subsets: ["arabic"], variable: "--font-cairo" });
 
 export const metadata: Metadata = {
-  title: "Iwan | Real Estate Extranet",
-  description: "Modern Luxury Real Estate in Dubai & Riyadh",
+  title: "Iwan | Elite Real Estate Extranet",
+  description: "The most exclusive real estate portal in the UAE and Saudi Arabia.",
+  keywords: "Dubai Real Estate, Luxury Villas, Riyadh Property, Iwan",
 };
-
-import { LanguageProvider } from "@/components/language-provider";
 
 export default function RootLayout({
   children,
@@ -26,11 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" className={`${outfit.variable} ${notoAr.variable} h-full antialiased dark`}>
-      <body className="min-h-full font-sans bg-background text-foreground">
+    <html lang="ar" className={`${outfit.variable} ${cairo.variable}`}>
+      <body className="font-outfit bg-background text-foreground antialiased selection:bg-primary/30">
         <LanguageProvider>
           {children}
-          <Toaster position="top-center" />
+          <Toaster position="top-center" richColors theme="dark" />
         </LanguageProvider>
       </body>
     </html>
