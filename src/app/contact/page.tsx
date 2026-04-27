@@ -11,19 +11,38 @@ import { useLanguage } from "@/components/language-provider";
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ContactPage() {
   const { language } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
   const isAr = language === "ar";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      toast.success(isAr ? "تم إرسال رسالتك بنجاح!" : "Message sent successfully!");
-      setIsSubmitting(false);
-    }, 1500);
+    
+    const supabase = createClient();
+    const { error } = await supabase.from("contact_messages").insert({
+      full_name: formData.fullName,
+      email: formData.email,
+      subject: formData.subject,
+      content: formData.message
+    });
+
+    if (error) {
+       toast.error(isAr ? "حدث خطأ أثناء الإرسال" : "Error sending message");
+    } else {
+       toast.success(isAr ? "تم إرسال رسالتك بنجاح!" : "Message sent successfully!");
+       setFormData({ fullName: "", email: "", subject: "", message: "" });
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -119,6 +138,8 @@ export default function ContactPage() {
                           <Label className="text-md px-1">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
                           <Input 
                             required
+                            value={formData.fullName}
+                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             placeholder={isAr ? "أدخل اسمك هنا" : "Enter your name"}
                             className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl focus:border-primary/50" 
                           />
@@ -128,6 +149,8 @@ export default function ContactPage() {
                           <Input 
                             required
                             type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="email@example.com"
                             className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl focus:border-primary/50" 
                           />
@@ -135,6 +158,8 @@ export default function ContactPage() {
                        <div className="md:col-span-2 space-y-3">
                           <Label className="text-md px-1">{isAr ? "الموضوع" : "Subject"}</Label>
                           <Input 
+                            value={formData.subject}
+                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                             placeholder={isAr ? "كيف يمكننا مساعدتك؟" : "How can we help you?"}
                             className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl focus:border-primary/50" 
                           />
@@ -143,6 +168,8 @@ export default function ContactPage() {
                           <Label className="text-md px-1">{isAr ? "الرسالة" : "Message"}</Label>
                           <Textarea 
                             required
+                            value={formData.message}
+                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                             placeholder={isAr ? "اكتب رسالتك هنا..." : "Type your message here..."}
                             className="bg-zinc-900/50 border-white/5 min-h-[180px] rounded-2xl focus:border-primary/50 p-4" 
                           />

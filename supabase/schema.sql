@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS units (
   location_en TEXT NOT NULL,
   location_ar TEXT NOT NULL,
   image_url TEXT,
-  category TEXT DEFAULT 'Luxury Villa',
+  category TEXT DEFAULT 'Villa', -- Matches frontend filters
   amenities TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -29,10 +29,30 @@ CREATE TABLE IF NOT EXISTS profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 3.1 Trigger for Profile Creation (CRITICAL: Links Auth to Database)
+-- This ensures when a user signs up via Auth UI, a record is created in the profiles table automatically.
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
 -- 4. Visits/Interactions Table
 CREATE TABLE IF NOT EXISTS visits (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
   unit_id UUID REFERENCES units(id) ON DELETE CASCADE,
   visit_date DATE NOT NULL,
   status TEXT DEFAULT 'pending', -- 'pending', 'confirmed', 'completed', 'cancelled'
@@ -41,15 +61,33 @@ CREATE TABLE IF NOT EXISTS visits (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 5. Contact Messages (Leads)
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  subject TEXT,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- (Rest of the file remains as it was: RLS policies and Storage setup)
+
 -- 5. Row Level Security (RLS)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE units ENABLE ROW LEVEL SECURITY;
 ALTER TABLE visits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
 -- 5.1 Units Policies (Publicly readable structured data)
 DROP POLICY IF EXISTS "Units are readable by everyone" ON units;
 CREATE POLICY "Units are readable by everyone" ON units
   FOR SELECT USING (true);
+
+-- 5.2 Contact Messages Policies (Mission 1: Leads generation)
+DROP POLICY IF EXISTS "Anyone can send contact messages" ON contact_messages;
+CREATE POLICY "Anyone can send contact messages" ON contact_messages
+  FOR INSERT WITH CHECK (true);
 
 -- 5.2 Profiles Policies (Private structured data)
 DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
