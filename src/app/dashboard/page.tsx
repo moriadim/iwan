@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, FileText, LayoutDashboard, LogOut, MapPin, MoreHorizontal, Settings, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Calendar, FileText, LayoutDashboard, LogOut, MapPin, MoreHorizontal, Settings, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { DashboardEmptyState } from "@/components/dashboard-empty-state";
 import { toast } from "sonner";
