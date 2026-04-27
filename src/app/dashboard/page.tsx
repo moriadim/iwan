@@ -134,8 +134,19 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDeleteVisit = async (visitId: string) => {
+    const { error } = await supabase.from("visits").delete().eq("id", visitId);
+    if (error) {
+      toast.error("فشل في إلغاء الزيارة");
+    } else {
+      setVisits(visits.filter(v => v.id !== visitId));
+      toast.success("تم إلغاء الزيارة بنجاح");
+    }
+  };
+
   const handleActionClick = () => {
-    toast.info("هذه الميزة ستكون متاحة قريباً في النسخة القادمة");
+    toast.info("جاري عرض التفاصيل...");
+    setActiveTab("visits");
   };
 
   return (
@@ -253,9 +264,9 @@ export default function DashboardPage() {
                                         <MoreHorizontal className="h-6 w-6" />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="bg-zinc-950 border-white/10 text-zinc-300 min-w-40 rounded-2xl shadow-2xl p-2 backdrop-blur-2xl transition-all">
-                                       <DropdownMenuItem onClick={() => setActiveTab("visits")} className="justify-end cursor-pointer rounded-xl hover:bg-white/5 py-3">التفاصيل</DropdownMenuItem>
+                                       <DropdownMenuItem onClick={handleActionClick} className="justify-end cursor-pointer rounded-xl hover:bg-white/5 py-3">التفاصيل</DropdownMenuItem>
                                        <DropdownMenuSeparator className="bg-white/5" />
-                                       <DropdownMenuItem onClick={handleActionClick} className="justify-end cursor-pointer rounded-xl text-destructive hover:bg-destructive/10 py-3">إلغاء</DropdownMenuItem>
+                                       <DropdownMenuItem onClick={() => handleDeleteVisit(visit.id)} className="justify-end cursor-pointer rounded-xl text-destructive hover:bg-destructive/10 py-3">إلغاء</DropdownMenuItem>
                                     </DropdownMenuContent>
                                  </DropdownMenu>
                               </TableCell>
@@ -282,7 +293,7 @@ export default function DashboardPage() {
                        <div className="flex items-center gap-12">
                           <div className="text-right"><p className="text-sm text-zinc-500">التاريخ</p><p className="font-mono">{v.visit_date}</p></div>
                           <Badge className="bg-zinc-800 rounded-full px-4">{v.status}</Badge>
-                          <Button variant="outline" onClick={handleActionClick} className="rounded-xl border-white/5">تعديل</Button>
+                          <Button variant="outline" onClick={() => handleDeleteVisit(v.id)} className="rounded-xl border-white/5 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all">إلغاء</Button>
                        </div>
                     </Card>
                  ))}
