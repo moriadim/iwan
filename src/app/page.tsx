@@ -83,12 +83,16 @@ export default function Home() {
                 : "Discover an exclusive collection of luxury properties designed specifically for those who appreciate excellence."}
             </p>
             <div className="flex flex-col md:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xl px-12 py-8 rounded-full shadow-lg shadow-primary/20 transition-all hover:scale-105">
-                {language === "ar" ? "استكشف الوحدات" : "Explore Units"}
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black text-xl px-12 py-8 rounded-full backdrop-blur-md transition-all hover:scale-105">
-                {language === "ar" ? "التواصل معنا" : "Contact Us"}
-              </Button>
+              <Link href="/catalog">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xl px-12 py-8 rounded-full shadow-lg shadow-primary/20 transition-all hover:scale-105">
+                   {language === "ar" ? "استكشف الوحدات" : "Explore Units"}
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black text-xl px-12 py-8 rounded-full backdrop-blur-md transition-all hover:scale-105">
+                   {language === "ar" ? "التواصل معنا" : "Contact Us"}
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>
