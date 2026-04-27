@@ -15,6 +15,7 @@ import { Calendar, FileText, LayoutDashboard, LogOut, MapPin, MoreHorizontal, Se
 import { Logo } from "@/components/logo";
 import { DashboardEmptyState } from "@/components/dashboard-empty-state";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
