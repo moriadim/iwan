@@ -32,6 +32,10 @@ export default function UnitPage() {
   const { language } = useLanguage();
   const supabase = createClient();
 
+  const [imageError, setImageError] = useState(false);
+
+  const fallbackImage = "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop";
+
   useEffect(() => {
     async function fetchUnit() {
       const { data, error } = await supabase
@@ -160,12 +164,13 @@ export default function UnitPage() {
       {/* Hero Image */}
       <div className="relative h-[65vh] md:h-[75vh] overflow-hidden">
         <Image 
-          src={unit.image_url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"} 
+          src={imageError ? fallbackImage : (unit.image_url || fallbackImage)} 
           alt={unit.title_ar} 
           fill 
           sizes="100vw"
           className="object-cover" 
           priority 
+          onError={() => setImageError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90" />
         <div className="absolute top-28 right-8">
