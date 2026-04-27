@@ -1,5 +1,5 @@
 # 🏆 Final Project Submission: Iwan (إيوان)
-**Course:** Cloud Architecture & Information Systems 2CP (SI 2CP)
+**Course:** Information Systems 2CP (SI 2CP)
 
 ---
 
