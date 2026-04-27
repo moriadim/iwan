@@ -101,7 +101,7 @@ export default function DashboardPage() {
     const file = e.target.files[0];
     setIsUpdating(true);
     const fileName = `${user.id}/avatar_${Date.now()}`;
-    const { error: uploadError } = await supabase.storage.from("id-documents").upload(fileName, file);
+    const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file);
 
     if (uploadError) {
       toast.error("فشل في رفع الصورة");
@@ -109,7 +109,7 @@ export default function DashboardPage() {
       return;
     }
 
-    const { data: { publicUrl } } = supabase.storage.from("id-documents").getPublicUrl(fileName);
+    const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
     
     // Update Auth and get fresh data
     const { data: { user: updatedUser }, error: authError } = await supabase.auth.updateUser({ 
