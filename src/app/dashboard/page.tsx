@@ -75,13 +75,22 @@ export default function DashboardPage() {
   const handleUpdateProfile = async () => {
     if (!newName) return;
     setIsUpdating(true);
-    const { error: authError } = await supabase.auth.updateUser({ data: { full_name: newName } });
-    const { error: dbError } = await supabase.from("profiles").update({ full_name: newName }).eq("id", user.id);
+    // 1. Update Auth Metadata and get fresh data
+    const { data: { user: updatedUser }, error: authError } = await supabase.auth.updateUser({
+      data: { full_name: newName }
+    });
+
+    // 2. Update Profiles Table
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .update({ full_name: newName })
+      .eq("id", user.id);
+
     if (authError || dbError) {
       toast.error("فشل في تحديث الملف الشخصي");
     } else {
+      if (updatedUser) setUser(updatedUser);
       toast.success("تم تحديث الملف الشخصي بنجاح");
-      setUser({ ...user, user_metadata: { ...user.user_metadata, full_name: newName } });
     }
     setIsUpdating(false);
   };
@@ -100,11 +109,18 @@ export default function DashboardPage() {
     }
 
     const { data: { publicUrl } } = supabase.storage.from("id-documents").getPublicUrl(fileName);
-    await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
+    
+    // Update Auth and get fresh data
+    const { data: { user: updatedUser }, error: authError } = await supabase.auth.updateUser({ 
+      data: { avatar_url: publicUrl } 
+    });
+
     await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
 
-    setUser({ ...user, user_metadata: { ...user.user_metadata, avatar_url: publicUrl } });
-    toast.success("تم تحديث صورة الملف الشخصي");
+    if (!authError && updatedUser) {
+      setUser(updatedUser);
+      toast.success("تم تحديث صورة الملف الشخصي");
+    }
     setIsUpdating(false);
   };
 
