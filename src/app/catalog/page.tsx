@@ -9,8 +9,12 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/components/language-provider";
 
 export default function CatalogPage() {
+  const [units, setUnits] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const { language } = useLanguage();
+  const supabase = createClient();
 
   useEffect(() => {
     async function fetchUnits() {
