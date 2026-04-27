@@ -90,7 +90,7 @@ export default function DashboardPage() {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
     setIsUpdating(true);
-    const fileName = `avatars/${user.id}/${Date.now()}`;
+    const fileName = `${user.id}/avatar_${Date.now()}`;
     const { error: uploadError } = await supabase.storage.from("id-documents").upload(fileName, file);
 
     if (uploadError) {
