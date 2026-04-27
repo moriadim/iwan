@@ -23,8 +23,34 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [visits, setVisits] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [newName, setNewName] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  const handleUpdateProfile = async () => {
+    if (!newName) return;
+    setIsUpdating(true);
+    
+    // 1. Update Auth Metadata
+    const { error: authError } = await supabase.auth.updateUser({
+      data: { full_name: newName }
+    });
+
+    // 2. Update Profiles Table
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .update({ full_name: newName })
+      .eq("id", user.id);
+
+    if (authError || dbError) {
+      toast.error("فشل في تحديث الملف الشخصي");
+    } else {
+      toast.success("تم تحديث الملف الشخصي بنجاح");
+      setUser({ ...user, user_metadata: { ...user.user_metadata, full_name: newName } });
+    }
+    setIsUpdating(false);
+  };
 
   useEffect(() => {
     async function getDashboardData() {
@@ -284,13 +310,24 @@ export default function DashboardPage() {
                  <div className="grid gap-6">
                     <div className="space-y-2">
                        <label className="text-sm text-zinc-400 pr-2">الاسم الكامل</label>
-                       <Input disabled defaultValue={user?.user_metadata?.full_name} className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl" />
+                       <Input 
+                         value={newName || user?.user_metadata?.full_name || ""} 
+                         onChange={(e) => setNewName(e.target.value)}
+                         className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl focus:border-primary/50 text-lg" 
+                         placeholder="أدخل اسمك الكامل"
+                       />
                     </div>
                     <div className="space-y-2">
                        <label className="text-sm text-zinc-400 pr-2">البريد الإلكتروني</label>
-                       <Input disabled defaultValue={user?.email} className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl" />
+                       <Input disabled defaultValue={user?.email} className="bg-zinc-900/50 border-zinc-800/50 h-14 rounded-2xl opacity-50 cursor-not-allowed" title="لا يمكن تغيير البريد الإلكتروني حالياً" />
                     </div>
-                    <Button className="bg-primary text-black font-bold h-14 rounded-2xl mt-4">حفظ التغييرات</Button>
+                    <Button 
+                      onClick={handleUpdateProfile} 
+                      disabled={isUpdating}
+                      className="bg-primary text-black font-bold h-16 rounded-2xl mt-4 text-xl shadow-xl shadow-primary/20"
+                    >
+                       {isUpdating ? <Loader2 className="animate-spin" /> : "حفظ التغييرات"}
+                    </Button>
                  </div>
               </div>
            </motion.div>
