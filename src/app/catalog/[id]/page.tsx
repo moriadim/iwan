@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { CalendarIcon, CheckCircle2, ChevronRight, MapPin, UploadCloud, Loader2 } from "lucide-react";
 import { uploadIdDocument } from "@/app/actions/upload";
 import { Navbar } from "@/components/navbar";
+import { useLanguage } from "@/components/language-provider";
 
 export default function UnitPage() {
   const { id } = useParams();
@@ -28,6 +29,7 @@ export default function UnitPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { language } = useLanguage();
   const supabase = createClient();
 
   useEffect(() => {
