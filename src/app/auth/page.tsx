@@ -201,15 +201,10 @@ export default function AuthPage() {
                 </TabsContent>
               </Tabs>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4 pb-10">
-              <div className="relative w-full text-center">
-                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                 <span className="relative bg-card px-2 text-sm text-muted-foreground uppercase">أو عبر</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 w-full">
-                 <Button variant="outline" className="rounded-xl h-11 border-white/5 bg-zinc-900/40 hover:bg-white/5">Google</Button>
-                 <Button variant="outline" className="rounded-xl h-11 border-white/5 bg-zinc-900/40 hover:bg-white/5">Apple ID</Button>
-              </div>
+            <CardFooter className="pb-10 pt-4 text-center">
+              <p className="text-zinc-500 text-sm">
+                عبر الاستمرار، فإنك توافق على <Link href="/terms" className="text-primary hover:underline">الشروط والأحكام</Link> الخاصة بنا.
+              </p>
             </CardFooter>
           </Card>
         </div>
