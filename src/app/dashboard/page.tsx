@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Calendar, FileText, LayoutDashboard, LogOut, MapPin, MoreHorizontal, Settings, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { DashboardEmptyState } from "@/components/dashboard-empty-state";
@@ -28,54 +28,19 @@ export default function DashboardPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const handleUpdateProfile = async () => {
-    if (!newName) return;
-    setIsUpdating(true);
-    
-    // 1. Update Auth Metadata
-    const { error: authError } = await supabase.auth.updateUser({
-      data: { full_name: newName }
-    });
-
-    // 2. Update Profiles Table
-    const { error: dbError } = await supabase
-      .from("profiles")
-      .update({ full_name: newName })
-      .eq("id", user.id);
-
-    if (authError || dbError) {
-      toast.error("فشل في تحديث الملف الشخصي");
-    } else {
-      toast.success("تم تحديث الملف الشخصي بنجاح");
-      setUser({ ...user, user_metadata: { ...user.user_metadata, full_name: newName } });
-    }
-    setIsUpdating(false);
-  };
-
   useEffect(() => {
     async function getDashboardData() {
       setIsLoading(true);
-      
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
       if (authError || !user) {
         router.push("/auth");
         return;
       }
-
       setUser(user);
 
       const { data, error } = await supabase
         .from("visits")
-        .select(`
-          *,
-          units (
-            title_ar,
-            title_en,
-            location_ar,
-            location_en
-          )
-        `)
+        .select(`*, units (*)`)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -83,10 +48,8 @@ export default function DashboardPage() {
       } else {
         setVisits(data || []);
       }
-      
       setIsLoading(false);
     }
-
     getDashboardData();
   }, [supabase, router]);
 
@@ -109,6 +72,51 @@ export default function DashboardPage() {
     { id: "settings", label_ar: "الإعدادات", label_en: "Settings", icon: <Settings size={20} /> },
   ];
 
+  const handleUpdateProfile = async () => {
+    if (!newName) return;
+    setIsUpdating(true);
+    const { error: authError } = await supabase.auth.updateUser({ data: { full_name: newName } });
+    const { error: dbError } = await supabase.from("profiles").update({ full_name: newName }).eq("id", user.id);
+    if (authError || dbError) {
+      toast.error("فشل في تحديث الملف الشخصي");
+    } else {
+      toast.success("تم تحديث الملف الشخصي بنجاح");
+      setUser({ ...user, user_metadata: { ...user.user_metadata, full_name: newName } });
+    }
+    setIsUpdating(false);
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+    setIsUpdating(true);
+    const fileName = `avatars/${user.id}/${Date.now()}`;
+    const { error: uploadError } = await supabase.storage.from("id-documents").upload(fileName, file);
+
+    if (uploadError) {
+      toast.error("فشل في رفع الصورة");
+      setIsUpdating(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from("id-documents").getPublicUrl(fileName);
+    await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
+    await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
+
+    setUser({ ...user, user_metadata: { ...user.user_metadata, avatar_url: publicUrl } });
+    toast.success("تم تحديث صورة الملف الشخصي");
+    setIsUpdating(false);
+  };
+
+  const handleViewDocument = (path: string) => {
+    const { data } = supabase.storage.from("id-documents").getPublicUrl(path);
+    window.open(data.publicUrl, "_blank");
+  };
+
+  const handleActionClick = () => {
+    toast.info("هذه الميزة ستكون متاحة قريباً في النسخة القادمة");
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-100 flex flex-col md:flex-row font-outfit" dir="rtl">
       {/* Sidebar */}
@@ -118,16 +126,13 @@ export default function DashboardPage() {
               <Logo className="text-primary" />
            </Link>
         </div>
-        
         <nav className="flex-1 space-y-3">
           {menuItems.map((item) => (
             <button 
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-4 p-4 transition-all rounded-2xl group text-right ${
-                activeTab === item.id 
-                  ? "bg-primary/10 text-primary border border-primary/20" 
-                  : "text-zinc-500 hover:bg-white/5 hover:text-white"
+                activeTab === item.id ? "bg-primary/10 text-primary border border-primary/20" : "text-zinc-500 hover:bg-white/5 hover:text-white"
               }`}
             >
               {item.icon}
@@ -135,7 +140,6 @@ export default function DashboardPage() {
             </button>
           ))}
         </nav>
-
         <div className="mt-auto pt-8 border-t border-white/5">
            <Button variant="ghost" onClick={handleSignOut} className="w-full justify-start gap-4 text-zinc-500 hover:text-destructive hover:bg-destructive/10 rounded-2xl py-6">
               <LogOut size={20} />
@@ -144,7 +148,6 @@ export default function DashboardPage() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-8 md:p-12 overflow-y-auto">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>
@@ -165,7 +168,6 @@ export default function DashboardPage() {
 
         {activeTab === "overview" && (
            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
-              {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
                   { label: "إجمالي الزيارات", value: stats.total, icon: <Calendar className="text-primary" />, desc: "جميع طلباتك المجدولة" },
@@ -185,13 +187,11 @@ export default function DashboardPage() {
                 ))}
               </div>
 
-              {/* Table Section */}
               <div className="space-y-8">
                  <div className="flex justify-between items-center">
                     <h2 className="text-3xl font-bold">الزيارات الأخيرة</h2>
                     <Button variant="link" onClick={() => setActiveTab("visits")} className="text-primary">عرض الكل</Button>
                  </div>
-                 
                  {isLoading ? (
                     <div className="space-y-4">
                        {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-3xl bg-white/5" />)}
@@ -213,7 +213,7 @@ export default function DashboardPage() {
                         <TableBody>
                           {visits.slice(0, 5).map((visit) => (
                             <TableRow key={visit.id} className="border-white/5 hover:bg-white/5 transition-all group">
-                              <TableCell className="font-bold py-8 pr-8 text-lg">{visit.units?.title_ar || "عقار غير محدد"}</TableCell>
+                              <TableCell className="font-bold py-8 pr-8 text-lg">{visit.units?.title_ar}</TableCell>
                               <TableCell className="text-zinc-400">
                                  <div className="flex items-center gap-2">
                                     <MapPin size={16} className="text-primary" />
@@ -222,18 +222,21 @@ export default function DashboardPage() {
                               </TableCell>
                               <TableCell className="font-mono text-zinc-300">{new Date(visit.visit_date).toLocaleDateString("ar-EG")}</TableCell>
                               <TableCell>
-                                <Badge variant="secondary" className={`
-                                  ${visit.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : ''}
-                                  ${visit.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : ''}
-                                  rounded-full px-6 py-1.5 text-sm
-                                `}>
+                                <Badge className="rounded-full px-6 py-1.5 text-sm bg-primary/10 text-primary border-primary/20">
                                   {visit.status === 'pending' ? "قيد المراجعة" : visit.status}
                                 </Badge>
                               </TableCell>
                               <TableCell className="pl-8">
-                                 <Button variant="ghost" className="h-12 w-12 p-0 hover:bg-primary/20 hover:text-primary rounded-full transition-all">
-                                    <MoreHorizontal className="h-6 w-6" />
-                                 </Button>
+                                 <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" className="h-12 w-12 p-0 rounded-full"><MoreHorizontal className="h-6 w-6" /></Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="bg-zinc-950 border-white/10 text-zinc-300 min-w-40 rounded-2xl p-2 backdrop-blur-2xl transition-all">
+                                       <DropdownMenuItem onClick={() => setActiveTab("visits")} className="justify-end cursor-pointer rounded-xl hover:bg-white/5 py-3">التفاصيل</DropdownMenuItem>
+                                       <DropdownMenuSeparator className="bg-white/5" />
+                                       <DropdownMenuItem onClick={handleActionClick} className="justify-end cursor-pointer rounded-xl text-destructive hover:bg-destructive/10 py-3">إلغاء</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                 </DropdownMenu>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -247,24 +250,18 @@ export default function DashboardPage() {
 
         {activeTab === "visits" && (
            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <h2 className="text-3xl font-bold">جميع الزيارات المجدولة</h2>
+              <h2 className="text-3xl font-bold">جميع الزيارات</h2>
               <div className="grid gap-6">
                  {visits.map(v => (
                     <Card key={v.id} className="bg-card/30 border-white/5 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6">
                        <div className="flex gap-6 items-center">
                           <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary"><Calendar size={28} /></div>
-                          <div>
-                             <h3 className="text-xl font-bold">{v.units?.title_ar}</h3>
-                             <p className="text-zinc-500">{v.units?.location_ar}</p>
-                          </div>
+                          <div><h3 className="text-xl font-bold">{v.units?.title_ar}</h3><p className="text-zinc-500">{v.units?.location_ar}</p></div>
                        </div>
                        <div className="flex items-center gap-12">
-                          <div className="text-right">
-                             <p className="text-sm text-zinc-500">التاريخ المختار</p>
-                             <p className="font-mono">{v.visit_date}</p>
-                          </div>
+                          <div className="text-right"><p className="text-sm text-zinc-500">التاريخ</p><p className="font-mono">{v.visit_date}</p></div>
                           <Badge className="bg-zinc-800 rounded-full px-4">{v.status}</Badge>
-                          <Button variant="outline" className="rounded-xl border-white/5">تعديل</Button>
+                          <Button variant="outline" onClick={handleActionClick} className="rounded-xl border-white/5">تعديل</Button>
                        </div>
                     </Card>
                  ))}
@@ -274,60 +271,33 @@ export default function DashboardPage() {
 
         {activeTab === "documents" && (
            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <h2 className="text-3xl font-bold">وثائق الهوية والملفات</h2>
+              <h2 className="text-3xl font-bold">وثائق الهوية</h2>
               <div className="grid md:grid-cols-2 gap-8">
                  {visits.filter(v => v.id_document_url).map(v => (
                     <Card key={v.id} className="bg-card/40 border-white/5 p-8 rounded-3xl group hover:border-primary/20 transition-all">
-                       <FileText size={48} className="text-primary mb-6 group-hover:scale-110 transition-transform" />
-                       <h3 className="text-xl font-bold mb-2">نسخة الهوية - {v.units?.title_ar}</h3>
-                       <p className="text-zinc-500 mb-6">تم الرفع في: {new Date(v.created_at).toLocaleDateString("ar-EG")}</p>
-                       <Button className="w-full bg-white/5 hover:bg-primary hover:text-black rounded-xl">عرض الملف</Button>
+                       <FileText size={48} className="text-primary mb-6" />
+                       <h3 className="text-xl font-bold mb-2">نسخة - {v.units?.title_ar}</h3>
+                       <Button onClick={() => handleViewDocument(v.id_document_url)} className="w-full bg-white/5 hover:bg-primary hover:text-black rounded-xl h-12">عرض الملف</Button>
                     </Card>
                  ))}
-                 <Card className="bg-zinc-900/50 border-dashed border-white/10 p-12 rounded-3xl flex flex-col items-center justify-center gap-4 text-zinc-500">
-                    <AlertCircle size={40} />
-                    <p>يمكنك رفع وثائق جديدة عند حجز زيارة لعقار جديد</p>
-                 </Card>
               </div>
            </motion.div>
         )}
 
         {activeTab === "settings" && (
            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl space-y-12">
-              <h2 className="text-3xl font-bold">إعدادات الحساب</h2>
+              <h2 className="text-3xl font-bold">الإعدادات</h2>
               <div className="space-y-8">
                  <div className="flex items-center gap-8 bg-card/40 p-8 rounded-[32px] border border-white/5">
-                    <Avatar className="h-24 w-24 border-4 border-primary/20">
-                       <AvatarImage src={user?.user_metadata?.avatar_url} />
-                       <AvatarFallback>I</AvatarFallback>
-                    </Avatar>
+                    <Avatar className="h-24 w-24 border-4 border-primary/20"><AvatarImage src={user?.user_metadata?.avatar_url} /><AvatarFallback>I</AvatarFallback></Avatar>
                     <div className="space-y-2">
-                       <Button variant="outline" className="rounded-xl border-white/10 px-6">تغيير الصورة</Button>
-                       <p className="text-xs text-zinc-600">JPG, PNG بحد أقصى 2 ميجابايت</p>
+                       <input type="file" id="avatar-up" className="hidden" accept="image/*" onChange={handleAvatarUpload} />
+                       <Button variant="outline" onClick={() => document.getElementById("avatar-up")?.click()} className="rounded-xl h-12" disabled={isUpdating}>{isUpdating ? <Loader2 className="animate-spin" /> : "تغيير الصورة"}</Button>
                     </div>
                  </div>
-
                  <div className="grid gap-6">
-                    <div className="space-y-2">
-                       <label className="text-sm text-zinc-400 pr-2">الاسم الكامل</label>
-                       <Input 
-                         value={newName || user?.user_metadata?.full_name || ""} 
-                         onChange={(e) => setNewName(e.target.value)}
-                         className="bg-zinc-900/50 border-white/5 h-14 rounded-2xl focus:border-primary/50 text-lg" 
-                         placeholder="أدخل اسمك الكامل"
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-sm text-zinc-400 pr-2">البريد الإلكتروني</label>
-                       <Input disabled defaultValue={user?.email} className="bg-zinc-900/50 border-zinc-800/50 h-14 rounded-2xl opacity-50 cursor-not-allowed" title="لا يمكن تغيير البريد الإلكتروني حالياً" />
-                    </div>
-                    <Button 
-                      onClick={handleUpdateProfile} 
-                      disabled={isUpdating}
-                      className="bg-primary text-black font-bold h-16 rounded-2xl mt-4 text-xl shadow-xl shadow-primary/20"
-                    >
-                       {isUpdating ? <Loader2 className="animate-spin" /> : "حفظ التغييرات"}
-                    </Button>
+                    <div className="space-y-2"><label className="text-sm text-zinc-400">الاسم</label><Input value={newName || user?.user_metadata?.full_name || ""} onChange={(e) => setNewName(e.target.value)} className="bg-zinc-900/50 h-14 rounded-2xl" /></div>
+                    <Button onClick={handleUpdateProfile} disabled={isUpdating} className="bg-primary text-black font-bold h-16 rounded-2xl text-xl shadow-xl shadow-primary/20">{isUpdating ? <Loader2 className="animate-spin" /> : "حفظ التغييرات"}</Button>
                  </div>
               </div>
            </motion.div>
