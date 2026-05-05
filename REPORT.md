@@ -2,8 +2,7 @@
 ### *Digital Transformation for the Elite Real Estate Market*
 
 **Date:** April 27, 2026  
-**Architect:** MERZOUGUI ABDELLAH EL GHAZALI  
-**Collaborators:** Hadjer Khawla MEGHOUFEL, BENHAOUA Boualem  
+**Collaborators:**MERZOUGUI ABDELLAH EL GHAZALI, Hadjer Khawla MEGHOUFEL, BENHAOUA Boualem  
 **Domain:** Full-Stack Information Systems (SI 2CP)
 
 ---
