@@ -30,7 +30,7 @@ Use the following account to test the internal tenant dashboard:
 ---
 
 ### 📺 Demonstration Video
-- **Link**: [Insert your YouTube/Loom/Drive link here]
+- **Link**: https://youtu.be/4LjYNdlkDFU
 
 ---
 
